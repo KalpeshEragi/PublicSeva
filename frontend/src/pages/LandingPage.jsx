@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Leaf,
   Camera,
@@ -11,7 +12,17 @@ import {
 
 export default function LandingPage() {
   const [darkMode, setDarkMode] = useState(false);
+  const navigate = useNavigate();
 
+  // Redirect logged-in users
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/citizen/home");
+    }
+  }, [navigate]);
+
+  // Dark mode toggle
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -25,7 +36,10 @@ export default function LandingPage() {
 
       {/* Navbar */}
       <nav className="flex justify-between items-center px-8 py-4 bg-white dark:bg-gray-800 shadow">
-        <div className="flex items-center gap-2 text-2xl font-bold text-green-700 dark:text-green-400">
+        <div
+          className="flex items-center gap-2 text-2xl font-bold text-green-700 dark:text-green-400 cursor-pointer"
+          onClick={() => navigate("/")}
+        >
           <Leaf /> PublicSeva
         </div>
 
@@ -38,10 +52,17 @@ export default function LandingPage() {
             {darkMode ? <Sun /> : <Moon />}
           </button>
 
-          <button className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+          <button
+            onClick={() => navigate("/login")}
+            className="px-4 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
             Login
           </button>
-          <button className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition">
+
+          <button
+            onClick={() => navigate("/signup")}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition"
+          >
             Sign Up
           </button>
         </div>
@@ -62,10 +83,17 @@ export default function LandingPage() {
         </p>
 
         <div className="flex justify-center gap-4">
-          <button className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow transition">
+          <button
+            onClick={() => navigate("/signup")}
+            className="px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow transition"
+          >
             Get Started
           </button>
-          <button className="px-8 py-3 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+
+          <button
+            onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })}
+            className="px-8 py-3 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+          >
             Learn More
           </button>
         </div>
