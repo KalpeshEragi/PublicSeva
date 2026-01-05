@@ -7,24 +7,26 @@ passport.use(
   new LocalStrategy(
     { usernameField: "email" },
     async (email, password, done) => {
-      try {
-        const user = await User.findOne({ email });
+      console.log("LOGIN ATTEMPT:", email, password);
 
-        if (!user) {
-          return done(null, false, { message: "Invalid email or password" });
-        }
+      const user = await User.findOne({ email });
+      console.log("USER FOUND:", user);
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-          return done(null, false, { message: "Invalid email or password" });
-        }
-
-        return done(null, user);
-      } catch (error) {
-        return done(error);
+      if (!user) {
+        return done(null, false, { message: "Invalid email or password" });
       }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      console.log("PASSWORD MATCH:", isMatch);
+
+      if (!isMatch) {
+        return done(null, false, { message: "Invalid email or password" });
+      }
+
+      return done(null, user);
     }
   )
 );
+
 
 export default passport;
