@@ -87,3 +87,19 @@ export const updateIssueStatus = async (req, res) => {
     });
   }
 };
+
+export const deleteIssue = async (req, res) => {
+  try {
+    const issue = await Issue.findById(req.params.id);
+
+    if (!issue) {
+      return res.status(404).json({ message: "Issue not found" });
+    }
+
+    await issue.deleteOne();
+
+    res.json({ message: "Issue deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
