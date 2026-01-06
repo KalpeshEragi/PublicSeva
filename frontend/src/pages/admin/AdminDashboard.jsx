@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect } from "react";
 import AdminSidebar from "./AdminSidebar";
 import AdminIssueCard from "./AdminIssueCard";
 import AdminEditModal from "./AdminEditModal";
@@ -7,6 +8,13 @@ import ConfirmDeleteModal from "./ConfirmDeleteModal";
 export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [editingIssue, setEditingIssue] = useState(null);
+
+  // for loading bar
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 800);
+    }, []);
 
   // ✅ Fake issues
   const [issues, setIssues] = useState([
