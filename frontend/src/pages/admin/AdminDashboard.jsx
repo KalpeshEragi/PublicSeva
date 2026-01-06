@@ -4,6 +4,11 @@ import AdminSidebar from "./AdminSidebar";
 import AdminIssueCard from "./AdminIssueCard";
 import AdminEditModal from "./AdminEditModal";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import {
+  fetchAdminIssues,
+  updateIssueStatus,
+  deleteIssue,
+} from "../../services/adminService";
 
 export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -12,39 +17,37 @@ export default function AdminDashboard() {
   // for loading bar
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setTimeout(() => setLoading(false), 800);
-    }, []);
+  // ✅ ADDED: issues state (MUST exist before useEffect)
+  const [issues, setIssues] = useState([]);
 
-  // ✅ Fake issues
-  const [issues, setIssues] = useState([
-    {
-      _id: "1",
-      title: "Overflowing garbage near bus stop",
-      description: "Garbage has not been collected for 3 days.",
-      status: "UNSOLVED",
-    },
-    {
-      _id: "2",
-      title: "Plastic waste dumped in open ground",
-      description: "Large plastic waste pile causing smell.",
-      status: "IN_PROGRESS",
-    },
-    {
-      _id: "3",
-      title: "Dead animal on roadside",
-      description: "Needs immediate removal.",
-      status: "RESOLVED",
-    },
-  ]);
+  useEffect(() => {
+    const loadIssues = async () => {
+      try {
+        setLoading(true);
+        const res = await fetchAdminIssues();
+        setIssues(Array.isArray(res.data) ? res.data : res.data.issues || []);
+      } catch (err) {
+        console.error("Failed to load issues", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadIssues();
+  }, []);
 
   // 🔁 UI-only status update
-  const handleStatusChange = (id, status) => {
-    setIssues((prev) =>
-      prev.map((issue) =>
-        issue._id === id ? { ...issue, status } : issue
-      )
-    );
+  const handleStatusChange = async (id, status) => {
+    try {
+      await updateIssueStatus(id, status);
+      setIssues((prev) =>
+        prev.map((issue) =>
+          issue._id === id ? { ...issue, status } : issue
+        )
+      );
+    } catch (err) {
+      console.error("Status update failed", err);
+    }
   };
 
   // ✏️ UI-only edit save
@@ -63,11 +66,17 @@ export default function AdminDashboard() {
   };
 
   // ❌ Step 2: actual delete AFTER confirmation
-  const handleDeleteConfirm = () => {
-    setIssues((prev) =>
-      prev.filter((issue) => issue._id !== deleteTarget)
-    );
-    setDeleteTarget(null);
+  const handleDeleteConfirm = async () => {
+    try {
+      await deleteIssue(deleteTarget);
+      setIssues((prev) =>
+        prev.filter((i) => i._id !== deleteTarget)
+      );
+    } catch (err) {
+      console.error("Delete failed", err);
+    } finally {
+      setDeleteTarget(null);
+    }
   };
 
   return (
@@ -79,15 +88,22 @@ export default function AdminDashboard() {
           Issue Moderation
         </h1>
 
-        {issues.map((issue) => (
-          <AdminIssueCard
-            key={issue._id}
-            issue={issue}
-            onStatusChange={handleStatusChange}
-            onEdit={setEditingIssue}
-            onDelete={handleDelete}
-          />
-        ))}
+        {/* ✅ ADDED: loading guard */}
+        {loading && (
+          <p className="text-gray-500">Loading issues...</p>
+        )}
+
+        {/* existing code preserved, just guarded */}
+        {!loading &&
+          issues.map((issue) => (
+            <AdminIssueCard
+              key={issue._id}
+              issue={issue}
+              onStatusChange={handleStatusChange}
+              onEdit={setEditingIssue}
+              onDelete={handleDelete}
+            />
+          ))}
       </main>
 
       {editingIssue && (
