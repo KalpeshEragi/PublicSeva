@@ -6,6 +6,7 @@ import {
   fetchAdminIssues,
   updateIssueStatus,
   deleteIssue,
+  updateIssue,
 } from "../../services/adminService";
 
 import LeftSidebar from "../../components/map/sidebar/LeftSidebar";
@@ -139,13 +140,21 @@ export default function AdminDashboard() {
 
 
   // UI-only edit save
-  const handleEditSave = (id, data) => {
-    setIssues((prev) =>
-      prev.map((issue) =>
-        issue._id === id ? { ...issue, ...data } : issue
-      )
-    );
-    setEditingIssue(null);
+  const handleEditSave = async (id, data) => {
+    try {
+      const res = await updateIssue(id, data);
+
+      setIssues((prev) =>
+        prev.map((issue) =>
+          issue._id === id ? res.data : issue
+        )
+      );
+
+      setEditingIssue(null);
+    } catch (err) {
+      console.error("Edit failed", err);
+      alert("Failed to save changes");
+    }
   };
 
   // Step 1: only OPEN confirmation modal
