@@ -10,14 +10,37 @@ import {
   deleteIssue,
 } from "../../services/adminService";
 
+import LeftSidebar from "../../components/map/sidebar/LeftSidebar";
+
+
 export default function AdminDashboard() {
+  // Left Sidebar state const
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Post card state const
+  const [selectedPostId, setSelectedPostId] = useState(null);
+
+  // Filtering const
+  const [filters, setFilters] = useState({
+    reportId: "",
+    status: "",
+    severity: "",
+    location: "",
+  });
+
+  // User location parsing const
+  const [myLocationActive, setMyLocationActive] = useState(false);
+
+  // delete guard const
   const [deleteTarget, setDeleteTarget] = useState(null);
+  
+  // edit issue const
   const [editingIssue, setEditingIssue] = useState(null);
 
   // for loading bar
   const [loading, setLoading] = useState(true);
 
-  // ✅ ADDED: issues state (MUST exist before useEffect)
+  // issues state (MUST exist before useEffect)
   const [issues, setIssues] = useState([]);
 
   useEffect(() => {
@@ -36,7 +59,7 @@ export default function AdminDashboard() {
     loadIssues();
   }, []);
 
-  // 🔁 UI-only status update
+  // UI-only status update
   const handleStatusChange = async (id, status) => {
     try {
       await updateIssueStatus(id, status);
@@ -50,7 +73,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // ✏️ UI-only edit save
+  // UI-only edit save
   const handleEditSave = (id, data) => {
     setIssues((prev) =>
       prev.map((issue) =>
@@ -60,12 +83,12 @@ export default function AdminDashboard() {
     setEditingIssue(null);
   };
 
-  // ❌ Step 1: only OPEN confirmation modal
+  // Step 1: only OPEN confirmation modal
   const handleDelete = (id) => {
     setDeleteTarget(id);
   };
 
-  // ❌ Step 2: actual delete AFTER confirmation
+  // Step 2: actual delete AFTER confirmation
   const handleDeleteConfirm = async () => {
     try {
       await deleteIssue(deleteTarget);
@@ -88,7 +111,7 @@ export default function AdminDashboard() {
           Issue Moderation
         </h1>
 
-        {/* ✅ ADDED: loading guard */}
+        {/* loading guard */}
         {loading && (
           <p className="text-gray-500">Loading issues...</p>
         )}
