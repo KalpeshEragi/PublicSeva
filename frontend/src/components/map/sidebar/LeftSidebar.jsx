@@ -96,14 +96,20 @@ export default function LeftSidebar({
             {/* Sidebar - Wider width */}
             <div
                 className={`
-                    fixed top-16 left-0 h-[calc(100vh-4rem)] z-30
-                    bg-white dark:bg-gray-800 shadow-xl
-                    transition-transform duration-300 ease-in-out
-                    w-full sm:w-[500px] lg:w-[480px]
+                    bg-white dark:bg-gray-800
+                    border-r border-gray-200 dark:border-gray-700
+                    shadow-sm
+
+                    w-[480px] max-w-full
                     flex flex-col
-                    ${isOpen ? "translate-x-0" : "-translate-x-full"}
+
+                    sticky top-16
+                    h-[calc(100vh-4rem)]
+
+                    ${isOpen ? "block" : "hidden"}
                 `}
-            >
+                >
+
                 {/* Header */}
                 <div className="flex items-center justify-between px-4 py-3 bg-green-600 flex-shrink-0">
                     <h2 className="text-lg font-semibold text-white">
@@ -188,7 +194,7 @@ export default function LeftSidebar({
 
 
                 {/* Post List - Scrollable */}
-                <div className="flex-1 overflow-hidden">
+                <div className="flex-1 overflow-y-auto">
                     <PostList
                         posts={filteredPosts}
                         selectedPostId={selectedPostId}
