@@ -10,6 +10,7 @@ import Home from "./pages/citizen/Home";
 import Profile from "./pages/citizen/Profile";
 import ReportIssue from "./pages/citizen/ReportIssue";
 import CheckStatus from "./pages/citizen/CheckStatus";
+import MapView from "./pages/citizen/MapView";
 
 function App() {
   const [dark, setDark] = useState(false);
@@ -61,6 +62,15 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={["citizen"]}>
                 <Profile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/citizen/map"
+            element={
+              <ProtectedRoute allowedRoles={["citizen"]}>
+                <MapView />
               </ProtectedRoute>
             }
           />
