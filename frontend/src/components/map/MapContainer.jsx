@@ -93,31 +93,6 @@ const MapContainer = forwardRef(function MapContainer({
     [API_KEY]
   );
 
-  // Initialize Supercluster when data or filter changes
-  useEffect(() => {
-    const filteredData = data.filter((point) => statusFilter[point.status]);
-
-    const features = filteredData.map((point) => ({
-      type: "Feature",
-      properties: { ...point },
-      geometry: {
-        type: "Point",
-        coordinates: [point.longitude, point.latitude],
-      },
-    }));
-
-    clusterRef.current = new Supercluster({
-      radius: 40, // Reduced radius for tighter clustering (approx 50-100m)
-      maxZoom: 16,
-    });
-
-    clusterRef.current.load(features);
-
-    // Update markers if map is already loaded
-    if (map.current && mapLoaded) {
-      updateMarkers();
-    }
-  }, [statusFilter]);
 
   // Initialize map - 3D view with accurate marker positioning
   useEffect(() => {
@@ -438,6 +413,37 @@ const MapContainer = forwardRef(function MapContainer({
     // Update ref with new markers
     markersRef.current = newMarkers;
   }, [mapLoaded, createMarkerElement, onMarkerClick, highlightedPostId]);
+
+
+  // Initialize Supercluster when data or filter changes
+    useEffect(() => {
+    if (!data.length) return;
+
+    const filteredData = data.filter(
+        (point) => statusFilter[point.status]
+    );
+
+    const features = filteredData.map((point) => ({
+        type: "Feature",
+        properties: { ...point },
+        geometry: {
+        type: "Point",
+        coordinates: [point.longitude, point.latitude],
+        },
+    }));
+
+    clusterRef.current = new Supercluster({
+        radius: 40,
+        maxZoom: 16,
+    });
+
+    clusterRef.current.load(features);
+
+    // Update markers if map is already loaded
+    if (map.current && mapLoaded) {
+        updateMarkers();
+    }
+    }, [data, statusFilter, mapLoaded, updateMarkers]);
 
   // Update markers when map moves or highlighted post changes
   useEffect(() => {
