@@ -212,7 +212,7 @@ export default function AdminDashboard() {
 
       
     {/* MAIN AREA */}
-    <div className="flex flex-1 relative">
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden">
       {/* LEFT: Map-style Sidebar */}
       <LeftSidebar
         isOpen={sidebarOpen}
